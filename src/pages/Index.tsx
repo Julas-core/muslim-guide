@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { BookOpen, Trophy, Users, ArrowRight, Mail, Smartphone, Shield } from "lucide-react";
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { showError, showSuccess } from "@/utils/toast";
+import InfiniteHero from "@/components/ui/infinite-hero";
 
 export default function Index() {
   const [email, setEmail] = useState("");
@@ -35,32 +36,8 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-white to-gray-50 py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center text-center">
-            <Badge className="mb-4 bg-green-100 text-green-800 hover:bg-green-100">
-              <Shield className="mr-2 h-4 w-4" />
-              Halal & Empowering
-            </Badge>
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl max-w-3xl">
-              Reclaim Your Time for <span className="text-green-600">Deen</span> and Growth
-            </h1>
-            <p className="mt-6 text-xl text-gray-600 max-w-2xl">
-              Join thousands of Muslim youth breaking digital addiction and building meaningful habits aligned with Islamic values.
-            </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg">
-                Start 7-Day Challenge
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button size="lg" variant="outline" className="px-8 py-6 text-lg">
-                Explore Community
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Section with InfiniteHero component */}
+      <InfiniteHero />
 
       {/* Features Section */}
       <section className="py-16 bg-gray-50">
