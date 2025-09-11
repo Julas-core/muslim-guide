@@ -3,11 +3,8 @@
 import { useGSAP } from "@gsap/react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { gsap } from "gsap";
-import { SplitText } from "gsap/SplitText";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import * as THREE from "three";
-
-gsap.registerPlugin(SplitText);
 
 interface ShaderPlaneProps {
 	vertexShader: string;
@@ -222,60 +219,54 @@ export default function InfiniteHero() {
 	const h1Ref = useRef<HTMLHeadingElement>(null);
 	const pRef = useRef<HTMLParagraphElement>(null);
 	const ctaRef = useRef<HTMLDivElement>(null);
+	const [isClient, setIsClient] = useState(false);
+
+	useEffect(() => {
+		setIsClient(true);
+	}, []);
 
 	useGSAP(
 		() => {
-			const ctas = ctaRef.current ? Array.from(ctaRef.current.children) : [];
+			if (!isClient) return;
 
-			const h1Split = new SplitText(h1Ref.current, { type: "lines" });
-			const pSplit = new SplitText(pRef.current, { type: "lines" });
-
+			// Simple animation without SplitText
+			gsap.set([h1Ref.current, pRef.current], { opacity: 0, y: 20 });
+			gsap.set(ctaRef.current?.children || [], { opacity: 0, y: 20 });
 			gsap.set(bgRef.current, { filter: "blur(28px)" });
-			gsap.set(h1Split.lines, {
-				opacity: 0,
-				y: 24,
-				filter: "blur(8px)",
-			});
-			gsap.set(pSplit.lines, {
-				opacity: 0,
-				y: 16,
-				filter: "blur(6px)",
-			});
-			if (ctas.length) gsap.set(ctas, { opacity: 0, y: 16 });
 
 			const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 			tl.to(bgRef.current, { filter: "blur(0px)", duration: 1.2 }, 0)
-				.to(
-					h1Split.lines,
-					{
-						opacity: 1,
-						y: 0,
-						filter: "blur(0px)",
-						duration: 0.8,
-						stagger: 0.1,
-					},
-					0.3,
-				)
-				.to(
-					pSplit.lines,
-					{
-						opacity: 1,
-						y: 0,
-						filter: "blur(0px)",
-						duration: 0.6,
-						stagger: 0.08,
-					},
-					"-=0.3",
-				)
-				.to(ctas, { opacity: 1, y: 0, duration: 0.6, stagger: 0.08 }, "-=0.2");
-
-			return () => {
-				h1Split.revert();
-				pSplit.revert();
-			};
+				.to([h1Ref.current, pRef.current], { opacity: 1, y: 0, duration: 0.8 }, 0.3)
+				.to(ctaRef.current?.children || [], { opacity: 1, y: 0, duration: 0.6, stagger: 0.1 }, "-=0.4");
 		},
-		{ scope: rootRef },
+		{ scope: rootRef, dependencies: [isClient] }
 	);
+
+	if (!isClient) {
+		return (
+			<div className="relative h-svh w-full overflow-hidden bg-black text-white">
+				<div className="absolute inset-0 bg-gradient-to-br from-green-900 to-black" />
+				<div className="relative z-10 flex h-svh w-full items-center justify-center px-6">
+					<div className="text-center">
+						<h1 className="mx-auto max-w-2xl lg:max-w-4xl text-[clamp(2.25rem,6vw,4rem)] font-extralight leading-[0.95] tracking-tight text-white">
+							Reclaim Your Time for Deen and Growth
+						</h1>
+						<p className="mx-auto mt-4 max-w-2xl md:text-balance text-sm/6 md:text-base/7 font-light tracking-tight text-white/70">
+							Join thousands of Muslim youth breaking digital addiction and building meaningful habits aligned with Islamic values.
+						</p>
+						<div className="mt-8 flex flex-row items-center justify-center gap-4">
+							<button className="group relative overflow-hidden border border-white/30 bg-gradient-to-r from-white/20 to-white/10 px-4 py-2 text-sm rounded-lg font-medium tracking-wide text-white backdrop-blur-sm transition-[border-color,background-color,box-shadow] duration-500 hover:border-white/50 hover:bg-white/20 hover:shadow-lg hover:shadow-white/10 cursor-pointer">
+								Start Challenge
+							</button>
+							<button className="group relative px-4 py-2 text-sm font-medium tracking-wide text-white/90 transition-[filter,color] duration-500 hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.6)] hover:text-white cursor-pointer">
+								Explore Community
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div
@@ -294,15 +285,13 @@ export default function InfiniteHero() {
 						ref={h1Ref}
 						className="mx-auto max-w-2xl lg:max-w-4xl text-[clamp(2.25rem,6vw,4rem)] font-extralight leading-[0.95] tracking-tight"
 					>
-						The road dissolves in light, the horizon remains unseen.
+						Reclaim Your Time for Deen and Growth
 					</h1>
 					<p
 						ref={pRef}
 						className="mx-auto mt-4 max-w-2xl md:text-balance text-sm/6 md:text-base/7 font-light tracking-tight text-white/70"
 					>
-						Minimal structures fade into a vast horizon where presence and
-						absence merge. A quiet tension invites the eye to wander without
-						end.
+						Join thousands of Muslim youth breaking digital addiction and building meaningful habits aligned with Islamic values.
 					</p>
 
 					<div
@@ -313,14 +302,14 @@ export default function InfiniteHero() {
 							type="button"
 							className="group relative overflow-hidden border border-white/30 bg-gradient-to-r from-white/20 to-white/10 px-4 py-2 text-sm rounded-lg font-medium tracking-wide text-white backdrop-blur-sm transition-[border-color,background-color,box-shadow] duration-500 hover:border-white/50 hover:bg-white/20 hover:shadow-lg hover:shadow-white/10 cursor-pointer"
 						>
-							Learn more
+							Start Challenge
 						</button>
 
 						<button
 							type="button"
 							className="group relative px-4 py-2 text-sm font-medium tracking-wide text-white/90 transition-[filter,color] duration-500 hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.6)] hover:text-white cursor-pointer"
 						>
-							View portfolio
+							Explore Community
 						</button>
 					</div>
 				</div>
